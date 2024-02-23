@@ -1,0 +1,151 @@
+<!-- je vais reprendre la base du HTML de mon layout présent dans le
+fichier fragments/layout.html
+Les balises que je redéfini vont surcharger celles de mon layout
+-->
+<html lang="en" layout:decorate="~{fragments/layout}" xmlns:layout="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Gestion des personnes</title>
+</head>
+<body>
+
+<!-- Cette section va remplacer la section du layout annotée layout:fragment="content" -->
+<main layout:fragment="content">
+    <!-- le titre de cette section est définie dans le controller (ParticipantController ou MembreController) -->
+    <h2 th:text="${titre}"></h2>
+    
+    <!--
+    Ce formulaire va envoyer une requête POST sur /participants ou /membres (selon ce qu'on a configuré dans l'attribut ${action} du controller)
+    Je vais utiliser th:action=@{} afin de rajouter un token _csrf dans notre requête HTTP (protection de securité imposée par Spring security)
+    -->
+    
+    <!-- on affiche les erreurs éventuelles  -->
+    <p th:if="${errors}" class="errors" th:text="${errors}"></p>
+    
+    <form th:action="@{|${action}|}" th:object="${personne}" method="post">
+        
+        <!-- Prenom -->
+        <div class="form-element">
+            <label>Prenom</label>
+            <!-- th:field="*{prenom} : ce champs de saisie met à jour l'attribut prenom de mon objet personne réferencé par th:object -->
+            <input type="text" th:field="*{prenom}">
+        </div>
+        
+        <!-- Nom -->
+        <div class="form-element">
+            <label>Nom</label>
+            <!-- th:field="*{nom} : ce champs de saisie met à jour l'attribut nom de mon objet personne réferencé par th:object -->
+            <input type="text" th:field="*{nom}">
+        </div>
+        
+        <!-- Pseudo (affiché uniquement si on est sur la page d'édition des membres) -->
+        <div class="form-element" th:if="${action == '/membres'}">
+            <label>Pseudo</label>
+            <!-- th:field="*{pseudo} : ce champs de saisie met à jour l'attribut pseudo de mon objet personne réferencé par th:object -->
+            <input type="text" th:field="*{pseudo}">
+            <!-- on affiche les erreurs éventuelles (notamment si le pseudo est déjà pris) -->
+            <span class="error" th:error="*{pseudo}"></span>
+        </div>
+        
+        <!-- Mot de passe (affiché uniquement si on est sur la page d'édition des membres) -->
+        <div class="form-element" th:if="${action == '/membres'}">
+            <label>Mot de passe</label>
+            <!-- th:field="*{motDePasse} : ce champs de saisie met à jour l'attribut motDePasse de mon objet personne réferencé par th:object -->
+            <input type="password" th:field="*{motDePasse}">
+        </div>
+        
+        <!-- Admin (affiché uniquement si on est sur la page d'édition des membres) -->
+        <div class="form-element" th:if="${action == '/membres'}">
+            <label>Admin</label>
+            <!-- th:field="*{admin} : ce champs de saisie met à jour l'attribut admin de mon objet personne réferencé par th:object -->
+            <input type="checkbox" th:field="*{admin}">
+        </div>
+        
+        <button>Validation</button>
+    </form>
+    
+    <!-- le titre de cette section est définie dans le controller (ParticipantController ou MembreController) -->
+    <h2 th:text="${titreSectionTable}"></h2>
+    
+    <table>
+        <tbody>
+        <tr>
+            <th>Prenom</th>
+            <th>Nom</th>
+            <!-- entêtes suplémentaires (affichées uniquement si on est sur la page d'édition des membres) -->
+            <th th:if="${action == '/membres'}">Pseudo</th>
+            <th th:if="${action == '/membres'}">Mot de Passe</th>
+            <th th:if="${action == '/membres'}">Admin</th>
+            
+            <th>Action</th>
+        </tr>
+        </tbody>
+        <!-- pour chaque personne de ma liste (qui peut être une liste de participants ou de mmebre), je rajoute une ligne -->
+        <tr th:each="personne : ${listePersonnes}">
+            
+            <!--
+            ************** EDITION ************
+               si on est en vue d'édition
+               on va afficher un formulaire avec des input dans nos colonnes afin d'éditer la personne
+           -->
+            <section th:if="${personneEdit?.id == personne.id}">
+                <form  method="post" th:action="@{|${action}|}" th:object="${personneEdit}">
+                    <!-- afin qu'il y ait une modification qui soit faite sur la personne, il faut ajouter un paramètre supplémentaire <input type="hidden"> avec l'id pour qu'il n'y ai pas de création de personne -->
+                    <input type="hidden" th:field="*{id}">
+                    <td>
+                        <input type="text" th:field="*{prenom}">
+                    </td>
+                    <td>
+                        <input type="text" th:field="*{nom}">
+                    </td>
+                    
+                    <!-- colonnes supplémentaires affichées uniquement si on est sur la page d'édition des membres -->
+                    <td th:if="${action == '/membres'}">
+                        <input type="text" th:field="*{pseudo}">
+                        <!-- on affiche les erreurs éventuelles (notamment si le pseudo est déjà pris) -->
+                        <span class="error" th:error="*{pseudo}"></span>
+                    </td>
+                    <td th:if="${action == '/membres'}">
+                        <input type="password" th:field="*{motDePasse}">
+                    </td>
+                    <td th:if="${action == '/membres'}">
+                        <input type="checkbox" th:field="*{admin}">
+                    </td>
+                    <!-- FIN colonnes supplémentaires affichées uniquement si on est sur la page d'édition des membres -->
+                    
+                    <td> <!-- // si on est en vue d'édition : on affiche 2 boutons : 1 de validation + 1 d'annulation -->
+                        <!-- bouton de validation -->
+                        <button class="valid-button">valider</button>
+                        <!-- bouton d'annulation -->
+                        <a class="link-button edit-button" th:href="@{|${action}|}">annuler</a>
+                    </td>
+                </form>
+                
+               
+            </section>
+            
+            <!--
+         ************** AFFICHAGE ************
+            si on n'est pas en vue d'édition
+            on affiche les données avec des acttions pour editer ou supprimer
+        -->
+            <section th:if="${personneEdit?.id != personne.id}">
+                <td th:text="${personne.prenom}"></td>
+                <td th:text="${personne.nom}"></td>
+                <!-- colonnes supplémentaires affichées uniquement si on est sur la page d'édition des membres -->
+                <td th:if="${action == '/membres'}" th:text="${personne.pseudo}"></td>
+                <td th:if="${action == '/membres'}" th:text="${personne.motDePasse}"></td>
+                <td th:if="${action == '/membres'}" class="check" th:text="${personne.admin ? '✓' : ''}"></td>
+                <td>
+                    <!-- lien vers la même page en édition(ajout d'un paramètre de requête edit avec l'id de la personne à modifier) -->
+                    <a class="link-button edit-button" th:href="|?edit=${personne.id}|">✎</a>
+                    <!-- lien vers la page de confirmation de suppression d'un membre -->
+                    <a class="link-button delete-button" th:href="@{|${action}/${personne.id}/supprimer|}">✗</a>
+                </td>
+            </section>
+        </tr>
+    </table>
+   
+</main>
+
+</body>
+</html>

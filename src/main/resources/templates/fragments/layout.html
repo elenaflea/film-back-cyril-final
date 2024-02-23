@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Titre par défaut (va être redéfini dans nos templates qui décorent ce layout) </title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<!-- on prend le contenu de la balise <header> défini dans fragments/header.html -->
+<header th:replace="~{fragments/header}"></header>
+<!-- layout:fragment="content" : le contenu de la balise main va être remplacée
+par celui de la balise <main> des  templates (si elle est annotée avec : layout:fragment="content") -->
+<main layout:fragment="content"></main>
+<!-- on prend le contenu de la balise <footer> défini dans fragments/footer.html -->
+<footer th:replace="~{fragments/footer}"></footer>
+</body>
+</html>

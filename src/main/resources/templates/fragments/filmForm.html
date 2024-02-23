@@ -1,0 +1,110 @@
+<!-- j'ajoute un paramètre à mon fragment de façon à pouvoir l'utiliser sur mes pages d'affichage ET de création de film -->
+<div th:fragment="champsDeSaisie(canEdit)">
+    
+    <!-- Genre -->
+    <div class="form-element">
+        <label>Genre</label>
+        <!--
+            th:field="*{genre} : ce champs de saisie est synchronisé avec l'attribut genre de mon objet film réferencé par th:object
+            les options de mon select sont générées à partir de ma liste de genres : ${listeGenres}
+            qui a été mise dans le model grâce à la méthode annotée @ModelAttribute de mon controller
+        -->
+        <select th:disabled="${!canEdit}" th:field="*{genre}">
+            <option th:each="genre : ${listeGenres}" th:value="${genre.id}" th:text="${genre.titre}"></option>
+        </select>
+        <!-- th:errors="*{genre}" : on va afficher les erreurs de validation liées au paramètre "genre" -->
+        <span class="error"  th:errors="*{genre}"></span>
+    </div>
+    
+    
+    <!-- Année -->
+    <div class="form-element">
+        <label>Année</label>
+        <!-- th:field="*{annee} : ce champs de saisie est synchronisé avec l'attribut annee de mon objet film réferencé par th:object -->
+        <input th:disabled="${!canEdit}" th:field="*{annee}">
+        <!-- th:errors="*{annee}" : on va afficher les erreurs de validation liées au paramètre "annee" -->
+        <span class="error"  th:errors="*{annee}"></span>
+    </div>
+    
+    
+    <!-- Titre -->
+    <div class="form-element">
+        <label>Titre</label>
+        <!-- th:field="*{titre} : ce champs de saisie est synchronisé avec l'attribut titre de mon objet film réferencé par th:object -->
+        <input th:disabled="${!canEdit}" th:field="*{titre}">
+        <!-- th:errors="*{titre}" : on va afficher les erreurs de validation liées au paramètre "titre" -->
+        <span class="error"  th:errors="*{titre}"></span>
+    </div>
+    
+    
+    <!-- Réalisateur -->
+    <div class="form-element">
+        <label>Réalisateur</label>
+        <!--
+           th:field="*{realisateur} : ce champs de saisie est synchronisé avec l'attribut realisateur de mon objet film réferencé par th:object
+           les options de mon select sont générées à partir de ma liste de genres : ${listeParticipant}
+           qui a été mise dans le model grâce à la méthode annotée @ModelAttribute de mon controller
+       -->
+        <select th:disabled="${!canEdit}" th:field="*{realisateur}">
+            <option th:each="participant : ${listeParticipants}" th:value="${participant.id}" th:text="${participant}"></option>
+        </select>
+        <!-- th:errors="*{realisateur}" : on va afficher les erreurs de validation liées au paramètre "realisateur" -->
+        <span class="error"  th:errors="*{realisateur}"></span>
+    </div>
+    
+    
+    <!-- Durée -->
+    <div class="form-element">
+        <label>Durée</label>
+        <!-- th:field="*{duree} : ce champs de saisie est synchronisé avec l'attribut duree de mon objet film réferencé par th:object -->
+        <input th:disabled="${!canEdit}" th:field="*{duree}">
+        <!-- th:errors="*{duree}" : on va afficher les erreurs de validation liées au paramètre "duree" -->
+        <span class="error"  th:errors="*{duree}"></span>
+    </div>
+    
+    <!-- Acteurs -->
+    <div class="form-element">
+        <label>Acteurs</label>
+        <!--
+          th:field="*{realisateur} : ce champs de saisie est synchronisé avec l'attribut realisateur de mon objet film réferencé par th:object
+          les options de mon select sont générées à partir de ma liste de genres : ${listeParticipant}
+          qui a été mise dans le model grâce à la méthode annotée @ModelAttribute de mon controller
+      -->
+        <!-- on affiche une select (multiple pour pouvoir sélectionner plusieurs acteurs) lorsqu'on est en vu d'édition -->
+        <select th:if="${canEdit}" th:field="*{acteurs}" multiple>
+            <option th:each="participant : ${listeParticipants}" th:value="${participant.id}" th:text="${participant}"></option>
+        </select>
+        <!-- th:errors="*{acteurs}" : on va afficher les erreurs de validation liées au paramètre "acteurs" -->
+        <span class="error"  th:errors="*{acteurs}"></span>
+        
+        <!-- on affiche une liste lorsqu'on est en vude : détail -->
+        <ul th:if="${!canEdit}">
+            <!-- je crée une ligne dans ma liste par acteur dans mon film -->
+            <li th:each="acteur : ${film.acteurs}" th:text="${acteur}"></li>
+            <!-- pas besoin de faire th:text="| ${acteur.prenom} ${acteur.nom}| car j'ai redéfini le toString() de Participant" -->
+        </ul>
+    </div>
+    
+    
+    <!-- Synopsis -->
+    <div class="form-element">
+        <label>Synopsis</label>
+        <!-- th:field="*{synopsis} : ce champs de saisie est synchronisé avec l'attribut synopsis de mon objet film réferencé par th:object -->
+        <textarea th:disabled="${!canEdit}" rows="5" cols="80" th:field="*{synopsis}"></textarea>
+        <!-- th:errors="*{synopsis}" : on va afficher les erreurs de validation liées au paramètre "synopsis" -->
+        <span class="error"  th:errors="*{synopsis}"></span>
+    </div>
+    
+    <!-- Avis (on n'affiche que si on n'est pas en édition ET si la liste est non-vide -->
+    <div th:if="${!canEdit && film.avis.size() > 0}" class="form-element">
+        <label>Avis</label>
+        <ul>
+            <li th:each="avis : ${film.avis}">
+                <span th:text="|${avis.commentaire} [${avis.note}] - (${avis.membre.prenom})|" ></span>
+            </li>
+        </ul>
+    </div>
+    
+    <!-- bouton de validation (afficher uniquement si on est en Edit -->
+     <button th:if="${canEdit}">Valider</button>
+</div>

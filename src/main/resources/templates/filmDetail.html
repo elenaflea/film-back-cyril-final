@@ -1,0 +1,36 @@
+<!-- avec : layout:decorate="~{fragments/layout}"
+je vais reprendre la base du HTML de mon layout présent dans le
+fichier fragments/layout.html
+Les balises que je redéfini vont surcharger celles de mon layout
+-->
+<html lang="en" layout:decorate="~{fragments/layout}" xmlns:layout="http://www.w3.org/1999/xhtml">
+<head>
+    <title th:text="|Détail du film : ${film.titre}|"></title>
+</head>
+<body>
+
+<!-- Cette section va remplacer la section du layout annotée layout:fragment="content" -->
+<main  layout:fragment="content">
+    <h2 class="inline-title" th:text="|Détail du film : ${film.titre}|"></h2>
+    
+    <!-- Si on est authentifié on peut ajouté un avis -->
+    <!-- sec:authorize="isAuthenticated()" : on ne voit le lien que si on est authentifié  -->
+    <a sec:authorize="isAuthenticated()" th:href="@{|/films/${film.id}/avis|}" class="link-button">Ajouter Avis</a>
+    <!-- Si on est admin on peut modifier le film -->
+    <!-- sec:authorize="hasRole('admin')" : on ne voit le lien que si on a le rôle admin  -->
+    <a sec:authorize="hasRole('admin')" th:href="@{|/films/${film.id}/edit|}" class="link-button">Modifier</a>
+    
+    
+    
+    <!-- on créer un formulaire "disabled" afin d'avoir le th:objetc et les th:field qui fonctionnent pour la vue de détail -->
+    <form disabled th:object="${film}" >
+        <!--
+            on utilise le fragment filmForm qui sera également utilisé dans la page de création de film
+            on lui passe en argument le paramètre canEdit = false (afin de mettre en disabled les champs de saisie)
+        -->
+        <div th:replace="~{fragments/filmForm :: champsDeSaisie(false)}"></div>
+    </form>
+</main>
+
+</body>
+</html>

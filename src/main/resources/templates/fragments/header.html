@@ -1,0 +1,35 @@
+<!-- si on n'a pas de paramètre à notre fragment, pas besoin de l'attribut th:fragment -->
+<header>
+    <h1 class="header-title">
+        <!-- les fichiers qui sont à la racine du dossier static sont accessibles à la racine de l'application via : http://localhost:8080/nomFichier -->
+        <img th:src="@{/images/logoFilmotheque.png}">
+        <a href="/">Filmothèque</a>
+    </h1>
+    <!-- sémantiquement, on représente une partie navigation (<nav>) avec à l'interieur une liste (<ul>) de liens (<a>) -->
+    <nav>
+        <ul>
+            <li><a href="/films">Films</a></li>
+            <li sec:authorize="hasRole('admin')"><a href="/films/creer">Créer Film</a></li>
+            <li sec:authorize="hasRole('admin')"><a href="/genres">Genres</a></li>
+            <li sec:authorize="hasRole('admin')"><a href="/participants">Participants</a></li>
+            <li sec:authorize="hasRole('admin')"><a href="/membres">Membres</a></li>
+        </ul>
+    </nav>
+    <!-- on n'affiche cette section que pour les utilisateurs connectés -->
+    <section sec:authorize="isAuthenticated()">
+        <!--
+            on offre la possibilité de se déconnecter
+            Spring Security a implémenté un controller sur la route /logout
+            => quand on fait un POST sur /logout : ca déconnecte
+         -->
+        <form th:action="@{/logout}" method="post">
+            <!-- ${#authentication.name}" : recupère le username de l'utilisateur connecté-->
+            <button th:text="|Déconnecter l'utilisateur : ${#authentication.name}|"></button>
+        </form>
+    </section>
+    <!-- on n'affiche cette section que pour les utilisateurs NON connectés -->
+    <section sec:authorize="!isAuthenticated()"><span>Vous n'êtes pas connecté :</span>
+        <!-- on offre la possibilité de se connecter --> <a th:href="@{/login}">Se connecter</a>
+    </section>
+    
+</header>

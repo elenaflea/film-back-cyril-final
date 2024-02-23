@@ -1,0 +1,92 @@
+<!-- avec : layout:decorate="~{fragments/layout}"
+je vais reprendre la base du HTML de mon layout présent dans le
+fichier fragments/layout.html
+Les balises que je redéfini vont surcharger celles de mon layout
+-->
+<html lang="en" layout:decorate="~{fragments/layout}" xmlns:layout="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Films</title>
+</head>
+<body>
+
+<!-- Cette section va remplacer la section du layout annotée layout:fragment="content" -->
+<main  layout:fragment="content">
+    <h2>Les films de l'ENI</h2>
+    
+    <!-- Formulaire de recherche - rempli et envoie un objet de type ParametresRecherche car on amis th:object="${parametresRecherche} -->
+    <form method="get" th:action="@{/films}" id="search-form" th:object="${parametresRecherche}">
+        
+        
+        
+        <h3>Filtres : </h3>
+        <div class="form-element">
+            <select th:field="*{idGenre}" onchange="document.getElementById('search-form').submit();">
+                <option value="">--Tous les Genres --</option>
+                <option th:each="genre : ${listeGenres}" th:value="${genre.id}" th:text="${genre.titre}"></option>
+            </select>
+        </div>
+        <div class="form-element">
+            <label>Année</label>
+            <input type="number" th:field="*{anneeMin}" placeholder="année Min">
+            <input type="number" th:field="*{anneeMax}" placeholder="année Max">
+        </div>
+        <div class="form-element">
+            <label>Durée</label>
+            <input type="number" th:field="*{dureeMin}" placeholder="durée Min">
+            <input type="number" th:field="*{dureeMax}" placeholder="durée Max">
+        </div>
+        
+        <input th:field="*{search}" type="text" th:value="${param.search}" placeholder="rechercher par titre, genre, réalisateur">
+        <button>Valider</button>
+    </form>
+    
+    <table>
+        <thead>
+        <tr>
+            <th>Genre</th>
+            <th>Année</th>
+            <th>Titre</th>
+            <th>Réalisateur</th>
+            <th>Durée</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!--
+            je crée autant de balise <tr> qu'il y a d'éléments dans l'attribut de modèle : listeFilms
+            th:each="film :${listeFilms}" =  (en Java) : for (Film film : listeFilms)
+        -->
+        <tr th:each="film :${listeFilms}">
+            <!-- dans chaque balise <tr> créé par ma boucle th:each, 'ai accès à l'élément ${film} qui correspond à l'élément courantd e ma liste -->
+            <!-- ${film.attribut} fait appel au getter => ${film.geAttribut()} -->
+            <td th:text="${film.genre.titre}"></td>
+            <td th:text="${film.annee}"></td>
+            <td th:text="${film.titre}"></td>
+            <!--
+            plutôt que d'écrire :
+                <td th:text="| ${film.realisateur.prenom} ${film.realisateur.nom}|"></td>
+                j'ai surchargé la méthode toString() de Participant pour qu'elle affiche "prenom nom", donc pas besoin de formater le participant
+             -->
+            <td th:text="${film.realisateur}"></td>
+            <td th:text="${film.duree}"></td>
+            <td>
+                <!-- sémantiquement, on a un LIEN vers une autre page (page de détail d'un film)
+                car on n'envoie pas de donnée
+                => il faut mettre un <a> et l'afficher en bouton avec du CSS -->
+                
+                <!-- on veut en lien dynamique (th:href) relatif au contexte de l'application (@{}) -->
+                <a th:href="@{|/films/${film.id}|}" class="link-button">Détail</a>
+                
+                <!-- sec:authorize="isAuthenticated()" : on ne voit le lien que si on est authentifié  -->
+                <a sec:authorize="isAuthenticated()" th:href="@{|/films/${film.id}/avis|}" class="link-button">Avis</a>
+                <!-- sec:authorize="hasRole('admin')" : on ne voit le lien que si on est admin  -->
+                <a sec:authorize="hasRole('admin')" class="link-button delete-button" th:href="@{|/films/${film.id}/supprimer|}">supprimer</a>
+            </td>
+        </tr>
+        </tbody>
+        
+    </table>
+</main>
+
+</body>
+</html>

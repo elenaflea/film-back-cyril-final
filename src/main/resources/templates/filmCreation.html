@@ -1,0 +1,39 @@
+<!-- avec : layout:decorate="~{fragments/layout}"
+je vais reprendre la base du HTML de mon layout présent dans le
+fichier fragments/layout.html
+Les balises que je redéfini vont surcharger celles de mon layout
+-->
+<html lang="en" layout:decorate="~{fragments/layout}" xmlns:layout="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Ajout d'un film</title>
+</head>
+<body>
+
+<!-- Cette section va remplacer la section du layout annotée layout:fragment="content" -->
+<main  layout:fragment="content">
+    <h2 class="inline-title" th:if="${film.id == 0}">Ajout de film</h2>
+    <h2 class="inline-title" th:if="${film.id != 0}" th:text="|Modification du film : ${film.titre}|"></h2>
+        <!--
+       Ce formulaire va envoyer une requête POST sur /film/creer
+       Je vais utiliser th:action=@{} afin de rajouter un token _csrf dans notre requête HTTP (protection de securité imposée par Spring security)
+       Je vais ajouter un th:object="${film}" afin d'envoyer un objet de type Film au controller
+       -->
+        
+        <form th:action="@{/films/creer}" th:object="${film}" method="post">
+            <!--
+                je rajoute un input type="hidden" pour envoyer l'id du film et les avis en plus si on est en modification
+                c'est pour être sur de bien les renvoyer sur la requête de modif
+            -->
+            <input type="hidden"  th:if="${film.id != 0 }" th:field="*{id}">
+            <input type="hidden"  th:if="${film.id != 0 }" th:field="*{avis}">
+            
+        <!--
+            on utilise le fragment filmForm qui sera également utilisé dans la page de création de film
+            on lui passe en argument le paramètre canEdit = true (afin de ne pas mettre en disabled les champs de saisie)
+        -->
+        <div th:replace="~{fragments/filmForm :: champsDeSaisie(true)}"></div>
+    </form>
+</main>
+
+</body>
+</html>

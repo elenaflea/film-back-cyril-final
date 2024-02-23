@@ -1,0 +1,43 @@
+<!-- je vais reprendre la base du HTML de mon layout présent dans le
+fichier fragments/layout.html
+Les balises que je redéfini vont surcharger celles de mon layout
+-->
+<html lang="en" layout:decorate="~{fragments/layout}" xmlns:layout="http://www.w3.org/1999/xhtml">
+<head>
+    <title th:text="|Avis du film : ${film.titre}|"></title>
+</head>
+<body>
+
+<!-- Cette section va remplacer la section du layout annotée layout:fragment="content" -->
+<main layout:fragment="content">
+    <h2 th:text="|Avis du film : ${film.titre}|"></h2>
+    
+    <!--
+    Ce formulaire va envoyer une requête POST sur /film/${film.id}/avis
+    Je vais utiliser th:action=@{} afin de rajouter un token _csrf dans notre requête HTTP (protection de securité imposée par Spring security)
+    Je vais ajouter un th:object="${avis}" afin d'envoyer un objet de type Avis au controller
+    -->
+    
+    <form th:action=@{|/films/${film.id}/avis|} th:object="${avis}" method="post">
+        
+        <!-- Note -->
+        <div class="form-element">
+            <label>Note</label>
+            <!-- th:field="*{note} : ce champs de saisie met à jour l'attribut note de mon objet avis réferencé par th:object -->
+            <input type="text" th:field="*{note}">
+        </div>
+        
+        
+        <!-- Commentaire -->
+        <div class="form-element">
+            <label>Commentaire</label>
+            <!-- th:field="*{commentaire} : ce champs de saisie met à jour l'attribut note de mon objet avis réferencé par th:object -->
+            <textarea th:field="*{commentaire}"></textarea>
+        </div>
+        
+        <button>Validation</button>
+    </form>
+</main>
+
+</body>
+</html>

@@ -1,0 +1,22 @@
+<!-- je vais reprendre la base du HTML de mon layout présent dans le
+fichier fragments/layout.html
+Les balises que je redéfini vont surcharger celles de mon layout
+-->
+<html lang="en" layout:decorate="~{fragments/layout}" xmlns:layout="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Gestion des genres</title>
+</head>
+<body>
+
+<!-- Cette section va remplacer la section du layout annotée layout:fragment="content" -->
+<main layout:fragment="content">
+    <h2 th:text="${message}"></h2>
+    
+    <form th:action="@{|${action}|}" method="post" class="confirmation-form">
+        <button class="confirm-button">Je confirme</button>
+        <a class="link-button cancel-button" th:href="@{|${back}|}">annuler</a>
+    </form>
+</main>
+
+</body>
+</html>
