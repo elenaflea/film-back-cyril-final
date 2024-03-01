@@ -20,4 +20,6 @@ public interface GenreService {
     void supprimerGenreParId(long id);
 
     void creerGenre(Genre genre);
+
+    void modifierGenre(Genre genre);
 }

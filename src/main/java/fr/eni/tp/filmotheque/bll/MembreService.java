@@ -14,5 +14,5 @@ public interface MembreService {
 
     void supprimerMembreParId(long id);
 
-    void creerMembre(Membre participant) throws Exception;
+    void creerMembre(Membre participant);
 }

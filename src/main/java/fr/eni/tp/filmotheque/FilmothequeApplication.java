@@ -9,27 +9,27 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 
 import fr.eni.tp.filmotheque.controller.FilmController;
+import org.springframework.context.annotation.Bean;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
 
 @SpringBootApplication
-public class FilmothequeApplication implements CommandLineRunner {
-
-	@Autowired
-	MembreService membreService;
+public class FilmothequeApplication  {
 
 	public static void main(String[] args) {
 		ApplicationContext context = SpringApplication.run(FilmothequeApplication.class, args);
 	}
 
-	@Override
-	public void run(String... args) throws Exception {
-		 List<Membre> membres = membreService.consulterMembres();
-
-		 // si il n'y a pas de membre dans l'application, on en crée un
-		 if (membres.isEmpty()){
-			 Membre admin = new Membre("Cyril", "Mace", "admin", "admin", true);
-			 membreService.creerMembre(admin);
-		 }
+	/**
+	 * On définit un bean pour l'utilitaire d'encryption de mot de passe
+	 */
+	@Bean
+	public PasswordEncoder passwordEncoder() {
+		// BCryptPasswordEncoder : classe utilitaire de Spring Security qui decrypte/encrypte les mots de passe
+		return new BCryptPasswordEncoder();
 	}
+
+
 }

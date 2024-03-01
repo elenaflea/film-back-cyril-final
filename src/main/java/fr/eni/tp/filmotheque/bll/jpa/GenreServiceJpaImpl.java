@@ -4,7 +4,11 @@ import fr.eni.tp.filmotheque.bll.GenreService;
 import fr.eni.tp.filmotheque.bo.Genre;
 import fr.eni.tp.filmotheque.dal.GenreRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpStatusCodeException;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -46,8 +50,16 @@ public class GenreServiceJpaImpl implements GenreService {
     }
 
     @Override
-    public void supprimerGenreParId(long id) {
-        genreRepository.deleteById(id);
+    public void supprimerGenreParId(long id) throws ResponseStatusException{
+
+        // on vérifie d'abord que le genre existe
+        if (genreRepository.existsById(id)){
+            genreRepository.deleteById(id);
+        }
+        // si ca n'est pas le cas => on lance une exception
+        else{
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "le genre n'a pas été trouvé");
+        }
     }
 
     @Override
@@ -55,5 +67,17 @@ public class GenreServiceJpaImpl implements GenreService {
         System.out.println("creerGenre() : à compléter");
         // On crée le genre dans la base de donnée
         genreRepository.save(genre);
+    }
+
+    @Override
+    public void modifierGenre(Genre genre) {
+        // on vérifie d'abord que le genre existe
+        if (genreRepository.existsById(genre.getId())){
+            genreRepository.save(genre);
+        }
+        // si ca n'est pas le cas => on lance une exception
+        else{
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "le genre n'existe pas");
+        }
     }
 }

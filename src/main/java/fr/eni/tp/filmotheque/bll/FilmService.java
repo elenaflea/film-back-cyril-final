@@ -25,6 +25,8 @@ public interface FilmService {
 
     void creerFilm(Film film);
 
+    void modifierFilm(Film film);
+
     void publierAvis(Avis avis, long idFilm);
 
     void supprimerFilmParId(Long idFilm);

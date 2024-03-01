@@ -17,4 +17,6 @@ public interface ParticipantService {
     void supprimerParticipantParId(long id);
 
     void creerParticipant(Participant participant);
+
+    void modifierParticipant(Participant participant);
 }

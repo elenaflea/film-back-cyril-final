@@ -5,10 +5,12 @@ import fr.eni.tp.filmotheque.bo.Membre;
 import fr.eni.tp.filmotheque.dal.MembreRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.MethodParameter;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -73,7 +75,7 @@ public class MembreServiceJpaImpl implements MembreService {
     }
 
     @Override
-    public void creerMembre(Membre membre) throws Exception{
+    public void creerMembre(Membre membre){
         // VALIDATION
         // on va vérifier qu'aucun membre avec ce pseudo n'existe déjà
         Membre membreAVecLeMemePseudo = recupererMembre(membre.getPseudo());
@@ -82,7 +84,7 @@ public class MembreServiceJpaImpl implements MembreService {
         if (membreAVecLeMemePseudo != null && membreAVecLeMemePseudo.getId() != membre.getId()){
             // on balance une exception (qui sera recupérée par Thymeleaf)
             // TODO : gérer ca avec un affichage dans le formulaire
-            throw new Exception("Un membre avec ce pseudo existe déjà");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Un membre avec ce pseudo existe déjà");
         }
 
         // avant de créer le membre dans la base de donnée, il va falloir encoder son mot de passe

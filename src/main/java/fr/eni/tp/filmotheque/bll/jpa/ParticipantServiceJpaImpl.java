@@ -6,7 +6,9 @@ import fr.eni.tp.filmotheque.bo.Participant;
 import fr.eni.tp.filmotheque.dal.ParticipantRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -50,7 +52,15 @@ public class ParticipantServiceJpaImpl implements ParticipantService {
 
     @Override
     public void supprimerParticipantParId(long id) {
-        participantRepository.deleteById(id);
+
+        // on vérifie d'abord que le participant existe
+        if (participantRepository.existsById(id)){
+            participantRepository.deleteById(id);
+        }
+        // si ca n'est pas le cas => on lance une exception
+        else{
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "le participant n'a pas été trouvé");
+        }
     }
 
     @Override
@@ -58,5 +68,17 @@ public class ParticipantServiceJpaImpl implements ParticipantService {
         System.out.println("creerParticipant() : à compléter");
         // On crée le participant dans la base de donnée
         participantRepository.save(participant);
+    }
+
+    @Override
+    public void modifierParticipant(Participant participant) {
+        // on vérifie d'abord que le participant existe
+        if (participantRepository.existsById(participant.getId())){
+            participantRepository.save(participant);
+        }
+        // si ca n'est pas le cas => on lance une exception
+        else{
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "le participant n'existe pas");
+        }
     }
 }

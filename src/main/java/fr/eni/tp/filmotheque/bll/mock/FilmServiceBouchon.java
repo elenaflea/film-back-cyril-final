@@ -78,6 +78,11 @@ public class FilmServiceBouchon implements FilmService {
 		lstFilms.add(film);
 	}
 
+	@Override
+	public void modifierFilm(Film film) {
+
+	}
+
 	/**
 	 * Cette méthode permet de simuler le stockage en base de données et la remontée
 	 * d'information

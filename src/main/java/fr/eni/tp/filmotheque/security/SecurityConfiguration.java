@@ -1,5 +1,6 @@
 package fr.eni.tp.filmotheque.security;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -8,12 +9,20 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import static org.springframework.security.web.util.matcher.RegexRequestMatcher.regexMatcher;
 
 @Configuration // Nécessaire lorsqu'on définit des @Bean dans une classe
 @EnableWebSecurity
 public class SecurityConfiguration {
+
+    /**
+     * Correspond au filtre qui va être executé en amont de chaque verification Spring security
+     * Ce filtre va décoder le token JWT et mettre à jour le contexte Spring Security au besoin
+     */
+    @Autowired
+    private JwtFilter jwtFilter;
 
     /**
      * On définit un filtre de type SecurityFilterChain
@@ -29,6 +38,9 @@ public class SecurityConfiguration {
      */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        // on ignore la vérification csrf sur les requêtes d'API (pas de risque car pas de Cookies)
+        http.csrf( (csrf) -> csrf.ignoringRequestMatchers("/api/**"));
+
         // on autorise la requête http entrante en fonction de ces critères :
         http.authorizeHttpRequests((authorize) -> authorize
                     // si jamais la requête veut aller sur l'url "/pageConnecte" : alors on doit être authentifié (.authenticated())
@@ -47,17 +59,20 @@ public class SecurityConfiguration {
                 .formLogin(Customizer.withDefaults())
                 // quand on se déconnecte=> on redirige vers l'accueil
                 .logout((logout) -> logout.logoutSuccessUrl("/"));
+
+        /*****************************************************************
+         * AVANT DE FAIRE LA VERIFICATION DE SECURITE, ON AJOUTE UN FILTRE
+         * qui va vérifier la présence ou non d'un Json Web Token
+         *
+         * il va remplir le contexte Spring Security
+         * à partir du token JWT
+         ******************************************************************/
+        http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+
         return http.build();
     }
 
-    /**
-     * On définit un bean pour l'utilitaire d'encryption de mot de passe
-     */
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        // BCryptPasswordEncoder : classe utilitaire de Spring Security qui decrypte/encrypte les mots de passe
-        return new BCryptPasswordEncoder();
-    }
+
 
     /**
      * On définit un bean pour la gestion des utilisateurs en mémoire (solution temporaire)

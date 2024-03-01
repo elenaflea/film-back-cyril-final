@@ -21,17 +21,23 @@ public interface FilmRepository extends JpaRepository<Film, Long> {
     @Query(
             // on recupère tous les films
             "select f from Film f " +
+
             // qui ont le paramètre de recherche #{#param.search} SOIT :
-                    // dans le titre
-            "where ( f.titre like %:#{#param.search}% " +
+
+            // non specifié
+            "where ( :#{#param.search} is null OR " +
+
+            // dans le titre
+            "( f.titre like %:#{#param.search}% " +
+
                     // dans le titre du genre
             "or f.genre.titre like :#{#param.search}% " +
                     // dans le prenom du réalisateur
             "or f.realisateur.prenom like :#{#param.search}% " +
                     // dans le nom du réalisateur
-            "or f.realisateur.nom like :#{#param.search}% ) " +
+            "or f.realisateur.nom like :#{#param.search}% ) )" +
 
-                    // ET EN PLUS si le genre est défini, je filtre par genre
+            // ET EN PLUS si le genre est défini, je filtre par genre
             "AND ( :#{#param.idGenre} is null OR f.genre.id = :#{#param.idGenre}) " +
 
             // ET EN PLUS si l'annéeMin  est défini, je filtre par annéeMin

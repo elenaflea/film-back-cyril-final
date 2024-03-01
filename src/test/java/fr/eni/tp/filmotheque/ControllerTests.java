@@ -21,7 +21,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
 // @Sql : on va pouvoir lancer un script SQL présent dans le dossier "resources" de mon dossier tests
 // avant d'executer les tests
-// il va falloir rajouter en plus un fichier personnalisé application-sqlserver.properties qui va contenir notre configuration applicable uniquement durant la phase de test
+// il va falloir rajouter en plus un fichier personnalisé application-backup.properties qui va contenir notre configuration applicable uniquement durant la phase de test
 @Sql(scripts = {"/creation_films.sql"}, executionPhase = BEFORE_TEST_CLASS)
 
 // addFilters = false : permet de ne pas appliquer les filtres de securité sur ce mock (on va pouvoir créer des films)
