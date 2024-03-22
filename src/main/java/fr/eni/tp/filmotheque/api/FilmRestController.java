@@ -1,18 +1,20 @@
 package fr.eni.tp.filmotheque.api;
 
+import fr.eni.tp.filmotheque.api.doc.SwaggerDoc;
 import fr.eni.tp.filmotheque.bll.FilmService;
 import fr.eni.tp.filmotheque.bll.GenreService;
 import fr.eni.tp.filmotheque.bll.MembreService;
 import fr.eni.tp.filmotheque.bll.ParticipantService;
 import fr.eni.tp.filmotheque.bo.Avis;
 import fr.eni.tp.filmotheque.bo.Film;
-import fr.eni.tp.filmotheque.bo.Membre;
 import fr.eni.tp.filmotheque.dto.ParametresRecherche;
 import fr.eni.tp.filmotheque.security.UtilisateurSpringSecurity;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -33,6 +35,7 @@ import java.util.List;
  *   ],
  *   "realisateur":{"id":503,"nom":"Abrams","prenom":"J. J."}}
  */
+@Tag(name = "API Film", description = SwaggerDoc.DESC_GENERIQUE + "films")
 @RestController// obligatoire afin que le controller soit dans le contexte Spring
 @CrossOrigin
 @RequestMapping("/api/films") // tous les @Getmapping/@Postmapping de mon controller auront le chemin de base /films
@@ -56,8 +59,10 @@ public class FilmRestController {
     /**
      * GET pour recupérer tous les films
      */
+    @Operation(summary = "Recupère une liste de films à partir de paramètres de recherche")
     @GetMapping
-    public List<Film> getFilms(ParametresRecherche parametresRecherche) {
+    public List<Film> getFilms(@Parameter(description = "paramètres de recherche correspondants aux filtres qui vont être appliqués")
+        ParametresRecherche parametresRecherche) {
         // on va vérifier si on a des paramètres de recherche
         if (parametresRecherche.isNotEmpty()){
             // si on a des paramètres de recherche, on va filtrer en fonction des paramètres
@@ -72,6 +77,7 @@ public class FilmRestController {
     /**
      * GET pour recupérer uns seul film
      */
+    @Operation(summary = "Recupère un film à partir de son id")
     @GetMapping("/{filmId}")
     public Film getFilmDetail(@PathVariable("filmId") long filmId) {
         // 1 - on va aller chercher le film depuis le service : filmService
@@ -83,6 +89,7 @@ public class FilmRestController {
      * POST pour créer
      * Ne pas oublier le @RequestBody
      */
+    @Operation(summary = "Crée un film à partir des arguments en paramètres")
     @PostMapping
     public void postFilm(@RequestBody @Valid Film film) {
         filmService.creerFilm(film);
@@ -92,6 +99,7 @@ public class FilmRestController {
      * PUT pour modifier
      * Ne pas oublier le @RequestBody
      */
+    @Operation(summary = "Modifie un film")
     @PutMapping("/{filmId}")
     public void putFilm(@RequestBody @Valid Film film, @PathVariable("filmId") long filmId) {
         // je m'assure que le film possède l'id correspondant au chemin d'api
@@ -104,6 +112,7 @@ public class FilmRestController {
      * DELETE
      * pour supprimer
      */
+    @Operation(summary = "Supprimer un film à partir de l'id en paramètre")
     @DeleteMapping("/{idFilm}")
     public void supprimerFilm(@PathVariable Long idFilm) {
         filmService.supprimerFilmParId(idFilm);
@@ -120,13 +129,12 @@ public class FilmRestController {
      * Ajouter un avis à un film
      * POST /{filmId}/avis
      */
+    @Operation(summary = "Ajoute un avis au film")
     @PostMapping("/{filmId}/avis")
-    public void postAvis(@RequestBody @Valid Avis avis, @PathVariable("filmId") long filmId, @AuthenticationPrincipal UtilisateurSpringSecurity utilisateurSpringSecurity) {
+    public void postAvis(@RequestBody @Valid Avis avis, @PathVariable("filmId") long filmId, @AuthenticationPrincipal UtilisateurSpringSecurity utilisateurConnecte) {
 
         // 1 - on va ajouter à l'avis le membre correspondant à l'utilisateur connecté
-        // avis.setMembre(utilisateurConnecte.getMembre());
-        // pour l'instant, on ne sait pas se connecter avec l'API => on prend le premier membre qu'on trouve
-        avis.setMembre(membreService.consulterMembres().get(0));
+        avis.setMembre(utilisateurConnecte.getMembre());
 
         // 2 - j'ajoute l'avis au film à partir de filmService
         filmService.publierAvis(avis, filmId);

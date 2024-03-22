@@ -1,8 +1,10 @@
 package fr.eni.tp.filmotheque.api;
 
+import fr.eni.tp.filmotheque.api.doc.SwaggerDoc;
 import fr.eni.tp.filmotheque.bll.ParticipantService;
 import fr.eni.tp.filmotheque.bo.Participant;
 import fr.eni.tp.filmotheque.bo.Personne;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Tag(name = "API Participants", description = SwaggerDoc.DESC_GENERIQUE + "participants")
 @RestController// obligatoire afin que le controller soit dans le contexte Spring
 @CrossOrigin
 @RequestMapping("/api/participants") // tous les @Getmapping/@Postmapping de mon controller auront le chemin de base /films

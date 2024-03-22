@@ -22,6 +22,8 @@ repositories {
 }
 
 dependencies {
+    // va générer automatiquement une doc d'API accessible au chemin : swagger-ui/index.html
+    // on peut specifier un autre chemin (par ex : /api) via applications.properties en ajoutant la config : springdoc.swagger-ui.path=/api
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0'
 
     implementation 'com.auth0:java-jwt:4.0.0'

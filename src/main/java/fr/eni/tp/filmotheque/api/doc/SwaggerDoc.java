@@ -1,6 +1,6 @@
-package fr.eni.tp.filmotheque.api;
+package fr.eni.tp.filmotheque.api.doc;
 
-public class Description {
+public class SwaggerDoc {
 
-    public final static String DESC_FIL_CONTROLLER = "Permet d'ajouter/modifier/supprimer/reupérer des films";
+    public final static String DESC_GENERIQUE = "Permet d'ajouter/modifier/supprimer/recpérer des ";
 }

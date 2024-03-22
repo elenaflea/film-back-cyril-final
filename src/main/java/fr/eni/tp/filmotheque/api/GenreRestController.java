@@ -1,7 +1,9 @@
 package fr.eni.tp.filmotheque.api;
 
+import fr.eni.tp.filmotheque.api.doc.SwaggerDoc;
 import fr.eni.tp.filmotheque.bll.GenreService;
 import fr.eni.tp.filmotheque.bo.Genre;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -11,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Tag(name = "API Genres", description = SwaggerDoc.DESC_GENERIQUE + "genres")
 @RestController// obligatoire afin que le controller soit dans le contexte Spring
 @CrossOrigin
 @RequestMapping("/api/genres")
